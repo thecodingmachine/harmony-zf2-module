@@ -19,6 +19,7 @@ class ZF2ContainerExplorer implements ContainerExplorerInterface {
      * Returns the name of the instances implementing `$type`.
      * Will scan only the main services, not the aliases.
      *
+     * @param string $type
      * @return string[]
      */
     public function getInstancesByType($type)
