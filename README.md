@@ -25,52 +25,18 @@ following command to download the latest stable version of this bundle:
 $ composer update
 ```
 
-TODO
-TODO
-TODO
-TODO
-TODO Continue here
-
-Step 2: Install the bundle in your Symfony application
-------------------------------------------------------
-
-Then, enable the bundle by adding the following line in the `app/AppKernel.php`
-file of your project:
-
-```php
-<?php
-// app/AppKernel.php
-
-// ...
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ...
-
-            new Harmony\Bundle\SymfonyBundle\HarmonySymfonyBundle(),
-        );
-
-        // ...
-    }
-
-    // ...
-}
-```
-
-Step 3: Register the Symfony module with Harmony
-------------------------------------------------
+Step 2: Register the ZF2 module with Harmony
+--------------------------------------------
 
 Now, create a **modules.php** file at the root of your package and instantiate
-the Symfony module:
+the ZF2 module:
 
 **modules.php**
 ```php
 <?php
 return [
-    new Harmony\Bundle\SymfonyBundle\SymfonyModule()
+    new Harmony\Module\ZF2Module\ZF2Module()
 ];
 ```
 
-You are done! Now, start Harmony. Harmony modules should be able to detect your Symfony services and act accordingly!
+You are done! Now, start Harmony. Harmony modules should be able to detect your ZF2 services and act accordingly!

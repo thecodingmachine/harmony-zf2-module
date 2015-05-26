@@ -1,33 +1,18 @@
 <?php
-namespace Harmony\Bundle\SymfonyBundle;
+namespace Harmony\Module\ZF2Module;
 
 
 use Harmony\Module\ContainerExplorerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Zend\ServiceManager\ServiceManager;
 
 class ZF2ContainerExplorer implements ContainerExplorerInterface {
-    private $container;
-    private $servicesMap;
+    private $serviceManager;
 
     /**
-     * @param array $servicesMap
+     * @param ServiceManager $serviceManager
      */
-    public function __construct(ContainerInterface $container, array $servicesMap) {
-        $this->servicesMap = $servicesMap;
-        $this->container = $container;
-    }
-
-    /**
-     * Builds a container explorer from the default generated/servicesMap.php file.
-     * @return SymfonyContainerExplorer
-     */
-    public static function build(ContainerInterface $container) {
-        if (file_exists(__DIR__.'/../../../../generated/servicesMap.php')) {
-            $servicesMap = require __DIR__.'/../../../../generated/servicesMap.php';
-        } else {
-            $servicesMap = array();
-        }
-        return new self($container, $servicesMap);
+    public function __construct(ServiceManager $serviceManager) {
+        $this->serviceManager = $serviceManager;
     }
 
     /**
@@ -38,26 +23,17 @@ class ZF2ContainerExplorer implements ContainerExplorerInterface {
      */
     public function getInstancesByType($type)
     {
-        $type = ltrim($type, '\\');
-        $services = array();
+        $registeredServices = $this->serviceManager->getRegisteredServices();
 
-        foreach ($this->servicesMap as $id => $desc) {
-            if ($desc['alias'] == true) {
-                continue;
-            }
-            if ($desc['class'] !== null) {
-                if ($type == $desc['class'] || is_subclass_of($desc['class'], $type)) {
-                    $services[] = $id;
-                    continue;
-                }
-            } else {
-                // no class, we must instantiate the class to find its type
+        $services = [];
+
+        foreach (['invokableClasses', 'factories', 'instances'] as $mode) {
+            foreach ($registeredServices[$mode] as $serviceName) {
                 try {
-                    $instance = $this->container->get($id);
+                    $instance = $this->serviceManager->get($serviceName);
                     if (is_object($instance)) {
                         if ($type == get_class($instance) || is_subclass_of($instance, $type)) {
-                            $services[] = $id;
-                            continue;
+                            $services[] = $serviceName;
                         }
                     }
                 } catch (\Exception $e) {
@@ -65,6 +41,7 @@ class ZF2ContainerExplorer implements ContainerExplorerInterface {
                 }
             }
         }
+
         return $services;
     }
 }

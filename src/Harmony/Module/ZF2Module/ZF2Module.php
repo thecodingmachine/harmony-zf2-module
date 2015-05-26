@@ -1,5 +1,5 @@
 <?php
-namespace Harmony\Bundle\SymfonyBundle;
+namespace Harmony\Module\ZF2Module;
 
 use Acclimate\Container\ContainerAcclimator;
 use Harmony\Module\ContainerExplorerInterface;
@@ -9,7 +9,7 @@ use Zend\Mvc\Application;
 
 class ZF2Module implements HarmonyModuleInterface {
 
-    private $kernel;
+    private $application;
     private $acclimatedContainer;
     private $containerExplorer;
 
@@ -20,21 +20,20 @@ class ZF2Module implements HarmonyModuleInterface {
      * @param Application $application
      */
     public function __construct(Application $application = null) {
-        if ($kernel !== null) {
-            $this->kernel = $kernel;
+        if ($application !== null) {
+            $this->application = $application;
         } else {
-            $loader = require_once __DIR__.'/../../../../../../../app/bootstrap.php.cache';
-            Debug::enable();
+            chdir(__DIR__.'/../../../../../../../');
 
-            require_once __DIR__.'/../../../../../../../app/AppKernel.php';
+            // Setup autoloading
+            require 'init_autoloader.php';
 
-            $this->kernel = new \AppKernel('dev', true);
-            $this->kernel->loadClassCache();
+            $this->application = Application::init(require 'config/application.config.php');
+
         }
-        $this->kernel->boot();
 
         $acclimate = new ContainerAcclimator();
-        $this->acclimatedContainer = $acclimate->acclimate($this->kernel->getContainer());
+        $this->acclimatedContainer = $acclimate->acclimate($this->application->getServiceManager());
     }
 
     /**
@@ -58,7 +57,7 @@ class ZF2Module implements HarmonyModuleInterface {
     public function getContainerExplorer()
     {
         if ($this->containerExplorer === null) {
-            $this->containerExplorer = SymfonyContainerExplorer::build($this->kernel->getContainer());
+            $this->containerExplorer = new ZF2ContainerExplorer($this->application->getServiceManager());
         }
         return $this->containerExplorer;
     }
