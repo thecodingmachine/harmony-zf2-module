@@ -13,7 +13,7 @@ Include the package in your **composer.json**:
 {
   "require-dev": {
     "harmony/harmony": "~1.0",
-    "harmony/zf2-module": "~2.0"
+    "harmony/zf2-module": "~1.0"
   }
 }
 ```
