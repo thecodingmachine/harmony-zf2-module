@@ -45,4 +45,15 @@ class ZF2ContainerExplorer implements ContainerExplorerInterface {
 
         return $services;
     }
+
+    /**
+     * Returns the name of the instances whose tag is `$tag`
+     *
+     * @param string $tag The tag to retrieve
+     * @return string[]
+     */
+    public function getInstancesByTag($tag)
+    {
+        return [];
+    }
 }
